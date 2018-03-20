@@ -10,13 +10,11 @@ torch.nn定义了神经网络需要的各种结构。如各种layer的functional
 ```python
 ### nn.Module 的 __call__ 函数， 有删减
 def __call__(self, *input, **kwargs):
-    for hook in self._forward_pre_hooks.values():
-        hook(self, input)
-    #----------前向传播--------------
+    #... 省略了一些 _forward_pre_hooks 函数流程
+
+    # 真正的前向传播
     result = self.forward(*input, **kwargs)
-    #-------------------------------
-    for hook in self._forward_hooks.values():
-        hook_result = hook(self, input, result)
-        
-    #。。。省略了很多hook函数流程
+    
+    #... 省略了一些 _forward_hooks 函数流程 
+    #... 省略了一些 _backward_hooks 函数流程
 ```
