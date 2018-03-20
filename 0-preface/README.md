@@ -7,4 +7,6 @@
 - 在[Docker Hub](https://hub.docker.com/)里找一个cuda的最新镜像
 - 本次测试使用[nvidia](https://hub.docker.com/r/nvidia/cuda/)的官方驱动，tag == 9.1-cudnn7-devel
 - `docker pull nvidia/cuda:9.1-cudnn7-devel`
-- 
+- `docker run -it nvidia/cuda:9.1-cudnn7-devel bash`
+
+## 安装pytorch
