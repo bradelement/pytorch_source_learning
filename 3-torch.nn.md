@@ -132,3 +132,17 @@ def batch_norm(input, running_mean, running_var, weight=None, bias=None,
     f = torch._C._functions.BatchNorm(running_mean, running_var, training, momentum, eps, torch.backends.cudnn.enabled)
     return f(input, weight, bias)
 ```
+
+## Serialization semantics
+```python
+torch.save(net.state_dict(), PATH)
+
+net = Net()
+net.load_state_dict(torch.load(PATH))
+```
+
+## DataParallel layers
+```python
+net = torch.nn.DataParallel(model, device_ids=[0, 1, 2])
+output = net(input_var)
+```
