@@ -18,6 +18,7 @@ def __call__(self, *input, **kwargs):
     
     #... 省略了一些 _forward_hooks 函数流程 
     #... 省略了一些 _backward_hooks 函数流程
+    return result
 ```
 
 如常用的`Conv2d`，定义如下：
@@ -68,10 +69,10 @@ def max_pool2d(input, kernel_size, stride=None, padding=0, dilation=1,
 
 最终其实调用了_C.so中的各个函数。
 
-## misc
+## train && eval
 一般训练一个神经网络的时候，需要区分train_net和validate_net。
 
-caffe里一般对应两个不同的prototxt。 网络结构一般基本一样，某些层如batch normalization等行为会有不同。
+caffe里一般对应两个不同的prototxt。 网络结构一般基本一样，某些层如batchNormalization, dropout等行为会有不同。
 
 pytorch的`nn.Module`提供了两个函数`train`和`eval`，可以无缝的切换两种模式。
 ```python
@@ -100,7 +101,7 @@ net.eval()
 
 可以看到batch norm层在前向传播的时候会判断`self.training`做不同的操作。
 
-因为最终的BatchNorm操作是在c模块中完成的，我们此处只能看到函数把self.training作为参数进行了传递。
+因为最终的BatchNorm操作是在c模块中完成的，我们此处只能看到函数把`self.training`作为参数进行了传递。
 
 使用方法可以参考batchnorm.py中`BatchNorm2d`的注释。
 > During training, this layer keeps a running estimate of its computed mean 
