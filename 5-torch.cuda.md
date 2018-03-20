@@ -15,3 +15,9 @@ class FloatTensor(_CudaBase, torch._C.CudaFloatTensorBase, _TensorBase):
 ```
 
 可以看到这里的FloatTensor和torch.FloatTensor定义非常类似，简单封装了`_C.so`里对应的cuda数据类型。
+
+### 常用函数
+```python
+# 判断cuda是否可用
+torch.cuda.is_available()
+```
