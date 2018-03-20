@@ -42,6 +42,7 @@ class MaxPool2d(Module):
 
 可以看出这些具体的层只是简单的继承了`nn.Module`，重写了`forward`方法，调用对应的functional实现即可。
 
+
 ## functional
 真正完成各层前向传播功能的函数，定义在nn下面的functional.py
 

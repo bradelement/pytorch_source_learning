@@ -12,5 +12,15 @@ autograd包则在tensor的基础上，定义了重要的`Variable`类型。封�
 
 `data`即为封装的tensor，参与前向传播。
 
-当`requires_grad == True`时，`grad_fn`记录了computational graph中的梯度函数，
-当执行`backward()`时，`Variable`会进行后向传播，并把计算出来的梯度放在`grad`中
+当`requires_grad == True`时，`grad_fn`记录了computational graph中的梯度函数，`grad`记录计算出来的梯度
+
+```python
+class Variable(_C._VariableBase):
+    #后向传播
+    def backward(self, gradient=None, retain_graph=None, 
+        create_graph=None, retain_variables=None):
+
+        torch.autograd.backward(self, gradient, retain_graph, create_graph, retain_variables)  
+```
+
+可以看到`Variable`定义了`backward()`来完成后向传播。
