@@ -67,3 +67,67 @@ def max_pool2d(input, kernel_size, stride=None, padding=0, dilation=1,
 ```
 
 最终其实调用了_C.so中的各个函数。
+
+## misc
+一般训练一个神经网络的时候，需要区分train_net和validate_net。
+
+caffe里一般对应两个不同的prototxt。 网络结构一般基本一样，某些层如batch normalization等行为会有不同。
+
+pytorch的`nn.Module`提供了两个函数`train`和`eval`，可以无缝的切换两种模式。
+```python
+# nn.Module
+class Module(object):
+    def __init__(self):
+        self.training = True
+        
+    def train(self, mode=True):
+        self.training = mode
+        for module in self.children():
+            module.train(mode)
+        return self
+
+    def eval(self):
+        return self.train(False)
+
+
+# for example
+net = xxxNet()
+net.train()
+# do some training
+net.eval()
+# do some validation
+```
+
+可以看到batch norm层在前向传播的时候会判断`self.training`做不同的操作。
+
+因为最终的BatchNorm操作是在c模块中完成的，我们此处只能看到函数把self.training作为参数进行了传递。
+
+使用方法可以参考batchnorm.py中`BatchNorm2d`的注释。
+> During training, this layer keeps a running estimate of its computed mean 
+and variance. The running sum is kept with a default momentum of 0.1.
+
+>During evaluation, this running mean/variance is used for normalization.
+
+```python
+class _BatchNorm(Module):
+    def forward(self, input):
+        return F.batch_norm(
+            input, self.running_mean, self.running_var, self.weight, self.bias,
+            self.training, self.momentum, self.eps)
+
+class BatchNorm2d(_BatchNorm):
+    #... 
+    pass
+
+
+# functional.py
+def batch_norm(input, running_mean, running_var, weight=None, bias=None,
+               training=False, momentum=0.1, eps=1e-5):
+    if training:
+        size = list(input.size())
+        if reduce(mul, size[2:], size[0]) == 1:
+            raise ValueError('Expected more than 1 value per channel when training, got input size {}'.format(size))
+            
+    f = torch._C._functions.BatchNorm(running_mean, running_var, training, momentum, eps, torch.backends.cudnn.enabled)
+    return f(input, weight, bias)
+```
